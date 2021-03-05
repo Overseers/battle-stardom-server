@@ -1,0 +1,30 @@
+type Query {
+    playerCount: Int
+    test: String
+}
+
+type Player {
+    email: String!
+    uid: String!
+}
+
+type PlayerEntity {
+    info: Player
+    attackPower: Int
+    defensePower: Int
+    life: Int
+    attacksPerSecond: Int
+    enemies: [Enemy]
+}
+
+type Enemy {
+    attackPower: Int
+    defensePower: Int
+    life: Int
+    attacksPerSecond: Int
+}
+
+type Subscription {
+    deltaPlayerCount: Int
+    playerUpdate(uuid: String!): Player
+}
