@@ -1,11 +1,10 @@
-import './util/signale';
+// import './util/signale';
 import './express/firebase';
 import app from './express/app';
 import { createServer } from 'http';
-import { ApolloServer, PubSub, gql, AuthenticationError } from 'apollo-server-express';
+import { ApolloServer, gql, AuthenticationError } from 'apollo-server-express';
 import admin from 'firebase-admin';
 import config from './util/config';
-import { v4 as uuid } from 'uuid';
 
 import { resolvers, schema } from './graphql';
 import { players, session } from './data';
@@ -97,27 +96,43 @@ server.listen(config.port, () => {
     // });
 });
 
-import Weapon from "./logic/items/weapon";
-import WeaponModifier from './logic/items/modifier';
-import { ModifierReturn } from './logic/entities/modifier';
+import Entity from './logic/entities';
+import Weapon from './logic/items/weapon';
+import WeaponModifier, { ModifierReturn } from './logic/items/modifier';
 
 const weapon = (new Weapon({
     name: 'test',
     description: 'test weapon',
-    minDamage: 5,
-    maxDamage: 50,
+    minDamage: 2,
+    maxDamage: 10,
     attackSpeed: 1
 }, [new WeaponModifier(50, 50, (damageRoll, min, max): ModifierReturn<{}> => {//this is % increased physical dmg
-    console.log('Original dmg roll:', damageRoll, '\nmodifier roll to apply (% increased physical dmg for weapon):', max);
+    // console.log('Original dmg roll:', damageRoll, '\nmodifier roll to apply (% increased physical dmg for weapon):', max);
     return {
         value: damageRoll + damageRoll * (max / 100)
     };
 })]));
 
-console.log('Final weapon dmg roll:', weapon.modifiedDamageRoll());
-console.log('Final weapon dmg roll:', weapon.modifiedDamageRoll());
-console.log('Final weapon dmg roll:', weapon.modifiedDamageRoll());
-console.log('Final weapon dmg roll:', weapon.modifiedDamageRoll());
-console.log('Final weapon dmg roll:', weapon.modifiedDamageRoll());
-console.log('Final weapon dmg roll:', weapon.modifiedDamageRoll());
-console.log('Final weapon dmg roll:', weapon.modifiedDamageRoll());
+const player = new Entity(20, 'Player');
+// player.equipWeapon(weapon);
+const enemy = new Entity(20, 'Enemy#1');
+
+function fight(first: Entity, second: Entity, finished: () => void) {
+    if (first.health <= 0 || second.health <= 0) {
+        finished();
+    } else {
+        const playerDmg = player.getAttackRoll;
+        const enemyDmg = enemy.getAttackRoll;
+        const playerDamageTaken = player.takeDamage(enemyDmg);
+        const enemyDamageTaken = enemy.takeDamage(playerDmg);
+
+        console.log(`\n\n${first.name} dealt ${playerDamageTaken} damage to ${second.name} with ${first.weapon.name} ... leaving it with ${second.health}/${second.maxHealth} health.`);
+        console.log(`\n\n${first.name} took a devestating blow of ${enemyDamageTaken} from ${second.name}'s ${second.weapon.name} ... leaving ${first.name} with ${first.health}/${second.maxHealth} health.`);
+
+        setTimeout(() => fight(first, second, finished), 1000);
+    }
+}
+
+fight(player, enemy, () => {
+    console.log(`${player.health !== 0 ? player.name : enemy.name} successfully ${player.health === 0 ? 'defended against' : 'defeated'} ${player.health === 0 ? player.name : enemy.name}`);
+});
