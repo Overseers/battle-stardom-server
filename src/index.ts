@@ -7,70 +7,80 @@ import admin from 'firebase-admin';
 import config from './util/config';
 
 import { resolvers, schema } from './graphql';
-import { players, session } from './data';
+import { players, playerMapping, FirebaserUser } from './data';
+import { v4 } from 'uuid';
 
 const express = app();
 
 const gqlServer = new ApolloServer({
     typeDefs: gql(schema),
     resolvers: resolvers,
-    // context: async ({ req, connection }) => {
-    //     console.log('test');
-    //     const token = req?.headers?.authorization || connection?.context.authorization || '';
+    context: async ({ req, connection }) => {
+        // console.log('test', req.headers);
+        //     const token = req?.headers?.authorization || connection?.context.authorization || '';
 
-    //     if ((token === 'Bearer' || token === 'Bearer null' || !token.startsWith('Bearer')) && config.nodeEnv !== 'dev') {
-    //         throw new AuthenticationError('Unauthorized');
-    //     }
+        //     if ((token === 'Bearer' || token === 'Bearer null' || !token.startsWith('Bearer')) && config.nodeEnv !== 'dev') {
+        //         throw new AuthenticationError('Unauthorized');
+        //     }
 
-    // const user = config.nodeEnv === 'dev' ? config.firebaseDev : await admin.auth().verifyIdToken(token.split('Bearer ')[1]);
+        // const user = config.nodeEnv === 'dev' ? config.firebaseDev : await admin.auth().verifyIdToken(token.split('Bearer ')[1]);
 
-    // if (!user) {
-    //     throw new AuthenticationError('You must be logged in');
-    // }
+        // if (!user) {
+        //     throw new AuthenticationError('You must be logged in');
+        // }
 
-    // return {
-    //     user
-    // };
-    // },
+        // return {
+        //     user
+        // };
+        return {
+            test: 'hello'
+        };
+    },
 
     // subscriptions: '/api/subscriptions'
     subscriptions: {
         path: '/api/subscriptions',
         onConnect: async (connectionParams, webSocket, context) => {
+            // console.log(connectionParams);
             const { authorization = '' } = connectionParams as ({ authorization: string; });
+            const header = context.request.headers.cookie;
+            const { id } = header?.split(/[;] */).reduce(function (result: any, pairStr: any) {
+                var arr = pairStr.split('=');
+                if (arr.length === 2) { result[arr[0]] = arr[1]; }
+                return result;
+            }, {});
             if (authorization === '' && config.nodeEnv !== 'dev') {
                 throw new Error('Failed to authenticate');
             }
             // console.log('Client connected', authorization);
             // pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.playerCount() });
-            const firebaseUser = config.nodeEnv === 'dev' ? config.firebaseDev : await admin.auth().verifyIdToken(authorization);
+            const firebaseUser: FirebaserUser = config.nodeEnv === 'dev' ? config.firebaseDev : await admin.auth().verifyIdToken(authorization);
 
             if (!firebaseUser) {
                 throw new AuthenticationError('You must be logged in');
             }
 
-            if (!session[firebaseUser.uid]) {
-                players.registerPlayer(firebaseUser.uid, {
+            let currentSession = playerMapping.find((entry) => entry.email === firebaseUser.email);
+
+            if (!currentSession) {
+                currentSession = players.registerPlayer({
                     firebaseUser,
                     sessionCreated: new Date(),
-                    lastUpdated: new Date()
+                    lastUpdated: new Date(),
+                    sid: id
                 });
             }
 
             //find game user next
 
-            return {
-                firebaseUser,
-                sessionCreated: new Date(),
-                lastUpdated: new Date()
-            };
+            return currentSession;
             //register clients to iterate over
         },
         onDisconnect: async (webSocket, context) => {
-            console.log('Client Disconnected',);
+            // console.log('Client Disconnected',);
             const session = await context.initPromise;
-            console.log('session data', session);
-            players.unregisterPlayer(session.sid);
+            // console.log('session data', session);
+            players.unregisterPlayer(session.sessionId);
             // pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.change(-1) });
             //remove clients to iterate over
         }
@@ -96,43 +106,3 @@ server.listen(config.port, () => {
     // });
 });
 
-import Entity from './logic/entities';
-import Weapon from './logic/items/weapon';
-import WeaponModifier, { ModifierReturn } from './logic/items/modifier';
-
-const weapon = (new Weapon({
-    name: 'test',
-    description: 'test weapon',
-    minDamage: 2,
-    maxDamage: 10,
-    attackSpeed: 1
-}, [new WeaponModifier(50, 50, (damageRoll, min, max): ModifierReturn<{}> => {//this is % increased physical dmg
-    // console.log('Original dmg roll:', damageRoll, '\nmodifier roll to apply (% increased physical dmg for weapon):', max);
-    return {
-        value: damageRoll + damageRoll * (max / 100)
-    };
-})]));
-
-const player = new Entity(20, 'Player');
-// player.equipWeapon(weapon);
-const enemy = new Entity(20, 'Enemy#1');
-
-function fight(first: Entity, second: Entity, finished: () => void) {
-    if (first.health <= 0 || second.health <= 0) {
-        finished();
-    } else {
-        const playerDmg = player.getAttackRoll;
-        const enemyDmg = enemy.getAttackRoll;
-        const playerDamageTaken = player.takeDamage(enemyDmg);
-        const enemyDamageTaken = enemy.takeDamage(playerDmg);
-
-        console.log(`\n\n${first.name} dealt ${playerDamageTaken} damage to ${second.name} with ${first.weapon.name} ... leaving it with ${second.health}/${second.maxHealth} health.`);
-        console.log(`\n\n${first.name} took a devestating blow of ${enemyDamageTaken} from ${second.name}'s ${second.weapon.name} ... leaving ${first.name} with ${first.health}/${second.maxHealth} health.`);
-
-        setTimeout(() => fight(first, second, finished), 1000);
-    }
-}
-
-fight(player, enemy, () => {
-    console.log(`${player.health !== 0 ? player.name : enemy.name} successfully ${player.health === 0 ? 'defended against' : 'defeated'} ${player.health === 0 ? player.name : enemy.name}`);
-});

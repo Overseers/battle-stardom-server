@@ -1,3 +1,4 @@
+import { ItemBases, ItemLocation } from "../items/itemBase";
 import Weapon from "../items/weapon";
 
 export interface EntityInfo {
@@ -9,13 +10,7 @@ export default class Entity implements EntityInfo {
     maxHealth: number = 0;
     defencePower: number = 2;
     attackPower: number = 0;
-    weapon: Weapon = new Weapon({
-        name: 'Fist',
-        description: 'Hands of the wielder',
-        minDamage: 1,
-        maxDamage: 3,
-        attackSpeed: 1
-    }, []);
+    mainHand: Weapon = ItemBases[ItemLocation.Mainhand].fist;
     name: string;
 
     constructor(health: number, name: string) {
@@ -24,10 +19,10 @@ export default class Entity implements EntityInfo {
         this.name = name;
     }
 
-    get getAttackRoll(): number {
-        const damage = this.weapon.modifiedDamageRoll();
+    get getAttackRoll() {
+        const damageRoll = this.mainHand.modifiedDamageRoll();
         // console.log(`${this.name}: rolled ${damage}`);
-        return damage;
+        return damageRoll;
     }
 
     takeDamage = (damage: number) => {
@@ -38,8 +33,12 @@ export default class Entity implements EntityInfo {
         // console.log(`${this.name}: took ${damage}. ${this.name} has ${this.health}/${this.maxHealth} left.`);
     };
 
+    get attackSpeed() {
+        return this.mainHand.attackSpeed; //add in modifiers for attack speed
+    }
+
     equipWeapon = (weapon: Weapon) => {
-        this.weapon = weapon;
+        this.mainHand = weapon;
     };
 
     toString() {

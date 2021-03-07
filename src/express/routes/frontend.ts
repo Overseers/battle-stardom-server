@@ -19,7 +19,7 @@ const fillTags = (tags: any) => {
     const filePath = path.resolve(config.rootDir, 'dist', './build', 'index.html');
 
     // read in the index.html file
-    let data = fs.readFileSync(filePath, 'utf8');
+    let data = '<html><body>hello</body></html>';
 
     data = data.replace(/\&TITLE/g, title);
     data = data.replace(/\&META_DESCRIPTION/g, metaDesc);
@@ -42,24 +42,20 @@ const useStaticGen = (tags: ({
     ogType: string;
 })) => {
     return function (request: express.Request, response: express.Response) {
+        console.log('hello');
         response.header('Content-Type', 'text/html');
 
         response.send(fillTags(tags));
     };
 };
 
-router.get('/', useStaticGen({
-    title: 'Battle Stardom',
-    metaDesc: 'Battle Stardom - Online battling!',
-    ogTitle: 'Home - Battle Stardom',
-    ogDesc: 'Battle Stardom - Online battling!',
-    ogImage: '',
-    ogUrl: '',
-    ogType: 'website'
-}));
+router.get('/', (request, response) => {
+    console.log('hello');
+    response.send({ hello: 'world' });
+});
 
 // router.get('/index.html', (_, response) => response.redirect('/'));
 
-router.use(express.static(path.resolve(config.rootDir, 'dist', 'build')));
+// router.use(express.static(path.resolve(config.rootDir, 'dist', 'build')));
 
 export default router;

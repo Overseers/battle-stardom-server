@@ -1,1 +1,20 @@
-export { }
+import Modifier from './modifier';
+
+export default class Item {
+    name: string;
+    description: string;
+    image: string;
+    constructor(name: string, description: string, image: string) {
+        this.name = name;
+        this.description = description;
+        this.image = image;
+    }
+
+    get modifierList(): string[] {
+        return [];
+    }
+
+    toString() {
+        return JSON.stringify(this);
+    }
+}
