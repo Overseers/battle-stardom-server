@@ -10,6 +10,7 @@ export default class Modifier {
     description: string = "";
     min: number;
     max: number;
+    tier: number = 0;
     private Apply: (input: number, min: number, max: number) => ModifierReturn;
 
     constructor(min: number, max: number, apply?: (input: number, min: number, max: number) => ModifierReturn) {

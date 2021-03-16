@@ -11,11 +11,9 @@
         "sourceMap": true,
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true
     },
     "compileOnSave": true,
-    "exclude": [
-        "./client"
-    ],
     "include": [
         "./src/*",
     ]

@@ -1,8 +1,11 @@
 import Item from "../items/item";
+import { property, typed } from 'class-converter';
 
 export default class Inventory {
+    @property()
     max: number = 30;
-    private items: Item[] = Array(this.max).fill(undefined);
+    @property()
+    private items: (Item | undefined)[] = Array(this.max).fill(undefined);
     constructor(savedInventory: Item[] = []) {
         if (savedInventory) {
             this.items.push(...savedInventory);
@@ -32,9 +35,12 @@ export default class Inventory {
 
     addItem = (item: Item) => {
         const index = this.items.findIndex(entry => entry === undefined);
+
         if (index !== -1) {
             this.items[index] = item;
         }
+
+        return index;
     };
 
     get getItems() {

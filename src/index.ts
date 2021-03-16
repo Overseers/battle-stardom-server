@@ -9,6 +9,7 @@ import config from './util/config';
 import { resolvers, schema } from './graphql';
 import { players, playerMapping, FirebaserUser } from './data';
 import { v4 } from 'uuid';
+import xPoweredBy from 'helmet/dist/middlewares/x-powered-by';
 
 const express = app();
 
@@ -105,4 +106,3 @@ server.listen(config.port, () => {
     //     path: '/api/subscriptions'
     // });
 });
-
