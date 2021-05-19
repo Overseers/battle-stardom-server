@@ -1,4 +1,6 @@
 import { pubsub } from "./graphql";
+import Entity from "./logic/entities";
+import Player from './logic/player';
 
 export interface FirebaserUser {
     iss: string;
@@ -16,9 +18,7 @@ export interface FirebaserUser {
 
 interface userSession {
     firebaseUser: FirebaserUser;
-    gameUser?: {
-
-    };
+    gameUser?: Player;
     sessionCreated: Date,
     lastUpdated: Date,
     sid: string;
@@ -28,23 +28,22 @@ let session: {
     [id: string]: userSession;
 } = {};
 
-export const playerMapping: ({
-    email: string;
-    sessionId: string;
-})[] = [];
-
 const players = {
     playerCount: () => Object.keys(session).length,
     registerPlayer: (user: userSession) => {
-        session[user.sid] = user;
-        pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.playerCount() });
-        return {
-            email: user.firebaseUser.email,
-            sessionId: user.sid
+        let player = new Player(user.firebaseUser.email);
+        player.enemies = [new Entity(100, 'Test Enemy'), new Entity(100, 'Test Enemy2')];
+        // console.log(player.enemies);
+        session[user.sid] = {
+            ...user,
+            gameUser: player
         };
+        pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.playerCount() });
+        return user.sid;
     },
-    unregisterPlayer: (socketId: string) => {
-        delete session[socketId];
+    unregisterPlayer: (data: ({ session: string, email: string; })) => {
+        //write last update to database
+        delete session[data.session];
         pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.playerCount() });
     }
 };

@@ -1,6 +1,13 @@
 type Query {
     playerCount: Int
     test: String
+    getEnemies: [EnemyEntity]
+    getPlayer: PlayerEntity
+}
+
+type Subscription {
+    deltaPlayerCount: Int
+    playerUpdate(uuid: String!): Player
 }
 
 type Player {
@@ -9,12 +16,12 @@ type Player {
 }
 
 type PlayerEntity {
-    info: Player
+    health: Int
+    maxHealth: Int
+    defencePower: Int
     attackPower: Int
-    defensePower: Int
-    life: Int
-    attacksPerSecond: Int
-    enemies: [Enemy]
+    weapon: Weapon
+    name: String
 }
 
 type Enemy {
@@ -24,7 +31,20 @@ type Enemy {
     attacksPerSecond: Int
 }
 
-type Subscription {
-    deltaPlayerCount: Int
-    playerUpdate(uuid: String!): Player
+type EnemyEntity {
+    health: Int
+    maxHealth: Int
+    defencePower: Int
+    attackPower: Int
+    mainHand: Weapon
+    name: String
+}
+
+type Weapon {
+    name: String
+    description: String
+    image: String
+    minDamage: Float
+    maxDamage: Float
+    attackSpeed: Float
 }

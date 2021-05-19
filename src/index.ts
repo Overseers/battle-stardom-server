@@ -1,4 +1,4 @@
-// import './util/signale';
+import './util/signale';
 import './express/firebase';
 import app from './express/app';
 import { createServer } from 'http';
@@ -7,83 +7,62 @@ import admin from 'firebase-admin';
 import config from './util/config';
 
 import { resolvers, schema } from './graphql';
-import { players, playerMapping, FirebaserUser } from './data';
+import { players, FirebaserUser, session } from './data';
 import { v4 } from 'uuid';
-import xPoweredBy from 'helmet/dist/middlewares/x-powered-by';
+import { IResolvers } from 'graphql-tools';
 
 const express = app();
 
+const authProvider = async (header: ({ authorization: string; })) => {
+    const { authorization = '' } = header;
+
+    if (authorization === '' && config.nodeEnv !== 'dev') {
+        throw new Error('Failed to authenticate');
+    }
+
+    const firebaseUser: FirebaserUser = config.nodeEnv === 'dev' ? config.firebaseDev : await admin.auth().verifyIdToken(authorization);
+
+    if (!firebaseUser) {
+        throw new AuthenticationError('You must be logged in');
+    }
+
+    let currentSession = Object.entries(session).find(([key, value]) => {
+        return value.firebaseUser.email === firebaseUser.email;
+    })?.[1];
+
+    if (!currentSession) {
+        return players.registerPlayer({
+            firebaseUser,
+            sessionCreated: new Date(),
+            lastUpdated: new Date(),
+            sid: v4()
+        });
+    }
+
+
+    return {
+        session: currentSession.sid,
+        email: firebaseUser.email
+    };
+};
+
 const gqlServer = new ApolloServer({
     typeDefs: gql(schema),
+    //@ts-ignore
     resolvers: resolvers,
     context: async ({ req, connection }) => {
-        // console.log('test', req.headers);
-        //     const token = req?.headers?.authorization || connection?.context.authorization || '';
-
-        //     if ((token === 'Bearer' || token === 'Bearer null' || !token.startsWith('Bearer')) && config.nodeEnv !== 'dev') {
-        //         throw new AuthenticationError('Unauthorized');
-        //     }
-
-        // const user = config.nodeEnv === 'dev' ? config.firebaseDev : await admin.auth().verifyIdToken(token.split('Bearer ')[1]);
-
-        // if (!user) {
-        //     throw new AuthenticationError('You must be logged in');
-        // }
-
-        // return {
-        //     user
-        // };
-        return {
-            test: 'hello'
-        };
+        const authorization: string = req?.headers?.authorization || connection?.context.authorization || '';
+        return authProvider(({ authorization: authorization.slice(7) }) as ({ authorization: string; }));
     },
 
     // subscriptions: '/api/subscriptions'
     subscriptions: {
         path: '/api/subscriptions',
-        onConnect: async (connectionParams, webSocket, context) => {
-            // console.log(connectionParams);
-            const { authorization = '' } = connectionParams as ({ authorization: string; });
-            const header = context.request.headers.cookie;
-            const { id } = header?.split(/[;] */).reduce(function (result: any, pairStr: any) {
-                var arr = pairStr.split('=');
-                if (arr.length === 2) { result[arr[0]] = arr[1]; }
-                return result;
-            }, {});
-            if (authorization === '' && config.nodeEnv !== 'dev') {
-                throw new Error('Failed to authenticate');
-            }
-            // console.log('Client connected', authorization);
-            // pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.playerCount() });
-            const firebaseUser: FirebaserUser = config.nodeEnv === 'dev' ? config.firebaseDev : await admin.auth().verifyIdToken(authorization);
-
-            if (!firebaseUser) {
-                throw new AuthenticationError('You must be logged in');
-            }
-
-            let currentSession = playerMapping.find((entry) => entry.email === firebaseUser.email);
-
-            if (!currentSession) {
-                currentSession = players.registerPlayer({
-                    firebaseUser,
-                    sessionCreated: new Date(),
-                    lastUpdated: new Date(),
-                    sid: id
-                });
-            }
-
-            //find game user next
-
-            return currentSession;
-            //register clients to iterate over
-        },
+        onConnect: async (connectionParams, webSocket, context) => authProvider(connectionParams as ({ authorization: string; })),
         onDisconnect: async (webSocket, context) => {
             // console.log('Client Disconnected',);
             const session = await context.initPromise;
-            // console.log('session data', session);
-            players.unregisterPlayer(session.sessionId);
-            // pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.change(-1) });
-            //remove clients to iterate over
+            players.unregisterPlayer(session);
         }
     }
 });
@@ -106,3 +85,33 @@ server.listen(config.port, () => {
     //     path: '/api/subscriptions'
     // });
 });
+
+import EquippableItem from './logic/entities/items/equippableItem';
+
+const weapon = new EquippableItem('my weapon', 'my detailed weapon description', '');
+
+console.log(JSON.stringify(weapon));
+
+// import Battle from './logic/battle';
+// import Entity from './logic/entities';
+// import { ItemBases, ItemLocation } from './logic/items/itemBase';
+
+// const nick = new Entity(100, 'Nick');
+// nick.equipWeapon(ItemBases[ItemLocation.Mainhand].testSword);
+
+// const Zach = new Entity(100, 'Zach');
+// Zach.equipWeapon(ItemBases[ItemLocation.Mainhand].fist);
+
+// const battle = new Battle(nick, Zach);
+
+// battle.fight((totalStep) => {
+//     // console.log(totalStep);
+//     if (totalStep.challengerAttack) {
+//         console.log(`${nick.name} dealt ${totalStep.challengerAttack.damageRoll.damage} with ${nick.mainHand.name} to ${Zach.name} dealing a total of ${totalStep.challengerAttack.damageTaken}. ${Zach.name} has ${Zach.health} / ${Zach.maxHealth} left.`);
+//     }
+//     if (totalStep.defenderAttack) {
+//         console.log(`${Zach.name} dealt ${totalStep.defenderAttack.damageRoll.damage} with ${Zach.mainHand.name} to ${nick.name} dealing a total of ${totalStep.defenderAttack.damageTaken}. ${nick.name} has ${nick.health} / ${nick.maxHealth} left.`);
+//     }
+// }, () => { });
+
+// console.log(1 + (1.5 / 100));

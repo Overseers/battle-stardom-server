@@ -17,6 +17,7 @@ export default class Entity implements EntityInfo {
         this.health = health;
         this.maxHealth = health;
         this.name = name;
+        this.equipWeapon(ItemBases[ItemLocation.Mainhand].fist); //always have this equipped as default
     }
 
     get getAttackRoll() {

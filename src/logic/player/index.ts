@@ -9,9 +9,10 @@ export default class Player {
     modifiers: EntityModifier[] = [];
     currentLevel: number = 1;
     currentExperience: number = 0;
+    enemies: Entity[] = [];
 
     get nextLevelExperience(): number {
-        return Math.floor(this.currentLevel + 225 * Math.pow(2, (this.currentLevel / 7)));
+        return 5000;
     }
 
     constructor(username: string) {
@@ -22,4 +23,8 @@ export default class Player {
     private applyModifier(modifier: EntityModifier) {
 
     }
+
+    registerNewSetOfEnemies = (enemies: Entity[]) => {
+        enemies = [...enemies];
+    };
 }

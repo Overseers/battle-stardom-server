@@ -3,9 +3,14 @@ import path from 'path';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 // import { withFilter } from 'graphql-subscriptions';
 import redis from 'ioredis';
-import { players } from '../data';
+import { players, session } from '../data';
 import config from '../util/config';
 import { withFilter } from 'apollo-server-express';
+import { Query } from './Query';
+import { Subscription } from './Subscription';
+import { Mutation } from './Mutation';
+import { Resolvers, ResolverFn } from './resolver-types';
+import Entity from '../logic/entities';
 
 const redisOptions: redis.RedisOptions = {
     host: config.redisDomainName,
@@ -23,28 +28,15 @@ const pubsub = new RedisPubSub({
 
 const schema = fs.readFileSync(path.resolve('./src/graphql/schema.graphql')).toString();
 
-const resolvers = {
-    Query: {
-        playerCount: () => players.playerCount(),
-        test: (parent: any, args: any, context: any, info: any) => {
-            console.log(parent, args, context, info);
-            return 'fuck';
-        }
-    },
-    Subscription: {
-        deltaPlayerCount: {
-            subscribe: () => pubsub.asyncIterator('deltaPlayerCount')
-        },
-        playerUpdate: {
-            subscribe: withFilter(
-                (root, args, context, info) => pubsub.asyncIterator('playerUpdate'),
-                (payload, variables) => {
-                    console.log('filter:', payload, variables);
-                    return true;
-                }
-            )
-        }
-    }
+export interface SessionType {
+    session: string,
+    email: string;
+}
+
+const resolvers: Resolvers<SessionType> = {
+    Query,
+    // Mutation,
+    Subscription
 };
 
 export {

@@ -44,21 +44,22 @@ export default class Battle {
         };
     };
 
-    fight = (onNextFightStep: (totalStep: TotalStep) => void) => {
+    fight = (onNextFightStep: (totalStep: TotalStep) => void, onWin: () => void) => {
         // console.log('hello');
         let challengerAttack = -1;
 
         if (this.nextChallengerAttack <= 0 && this.victory === -1) {
             challengerAttack = this.history.push({
                 entity: 'challenger',
-                step: this.nextFightStep(this.challenger, this.defender)
+                step: this.nextFightStep(this.challenger, this.defender) as any as Step
             }) - 1;
 
             if (this.defender.health <= 0) {
                 this.victory = 1;
+                onWin?.();
             }
 
-            const totalTicksToAttack = Math.ceil(this.challenger.attackSpeed * 1000 / this.fightTickMs);
+            const totalTicksToAttack = Math.ceil((1000 / (this.challenger.attackSpeed * 1000)) * 1000 / this.fightTickMs);
             this.nextChallengerAttack = totalTicksToAttack;
         } else {
             this.nextChallengerAttack--;
@@ -67,16 +68,24 @@ export default class Battle {
         let defenderAttack = -1;
 
         if (this.nextDefenderAttack <= 0 && this.victory === -1) {
+            const test = this.nextFightStep(this.defender, this.challenger);
             defenderAttack = this.history.push({
                 entity: 'defender',
-                step: this.nextFightStep(this.defender, this.challenger)
+                step: {
+                    damageRoll: {
+                        damage: test.damageRoll.damage,
+                        steps: test.damageRoll.steps.map(entry => entry.step)
+                    },
+                    damageTaken: test.damageTaken
+                }
             }) - 1;
 
             if (this.challenger.health <= 0) {
                 this.victory = 0;
+                onWin?.();
             }
 
-            const totalTicksToAttack = Math.ceil(this.defender.attackSpeed * 1000 / 100);
+            const totalTicksToAttack = Math.ceil((1000 / (this.defender.attackSpeed * 1000)) * 1000 / 100);
             this.nextDefenderAttack = totalTicksToAttack;
         } else {
             this.nextDefenderAttack--;
@@ -90,7 +99,7 @@ export default class Battle {
         }
 
         if (this.victory === -1) {
-            setTimeout(() => this.fight(onNextFightStep), this.fightTickMs);
+            setTimeout(() => this.fight(onNextFightStep, onWin), this.fightTickMs);
         }
     };
 }

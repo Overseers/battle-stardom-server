@@ -1,7 +1,7 @@
 import WeaponModifier, { ModifierReturn } from "./modifier";
 import Item from './item';
 import Modifier from "./modifier";
-import { property } from "class-converter";
+import { deserialize, property, serialize } from "class-converter";
 
 export default class Weapon extends Item {
     @property()
@@ -10,7 +10,9 @@ export default class Weapon extends Item {
     maxDamage: number;
     @property()
     attackSpeed: number;
-    @property()
+    @property()//need to change before serialize & after deserialize
+    // @serialize()
+    // @deserialize()
     modifiers: WeaponModifier[];
 
     constructor(weaponInfo: {
