@@ -5,20 +5,23 @@ export default class Weapon extends EquippableItem<Weapon> {
     maxDamage: number;
     minDamage: number;
 
+    //EQUIPPABLE ITEMS WILL REQUIRE 
+
     constructor(name: string, description: string, image: string) {
         super(name, description, image);
     }
 
     getDamageWithModifiers = () => {
+        const preCalculationModifiers = this.modifiers.filter(entry => entry.isNeededPreCalculation);
         return {
-            min: this.modifiers.reduce((acc, next) => {
+            min: preCalculationModifiers.reduce((acc, next) => {
                 const applied = next.apply(this);
                 if (next.apply !== undefined) {
                     acc = applied[0];
                 }
                 return acc;
             }, this.minDamage),
-            max: this.modifiers.reduce((acc, next) => {
+            max: preCalculationModifiers.reduce((acc, next) => {
                 const applied = next.apply(this);
                 if (next.apply !== undefined) {
                     acc = applied[1];

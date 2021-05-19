@@ -15,7 +15,11 @@ export default abstract class Modifier<T> {
     type: number;
     tier: number;
 
+    isNeededPreCalculation: boolean;
+
     isPrefix: boolean;
+
+    abstract apply: (data: T) => number[];
 
     innerApply = (data: T, callback: (weapon: T, affix: Affix) => any = () => 0) => callback(data, getAffixesForLocation(this.location)[this.affixType][this.type][this.tier]);
 
