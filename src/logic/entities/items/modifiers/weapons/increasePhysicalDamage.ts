@@ -1,25 +1,28 @@
 import Location from "../../info/itemLocations";
 import Weapon from "../../weapon";
 import Affix, { getAffixesForLocation } from "../../affixes";
-import Modifier from "../modifier";
+import ItemModifier from "../itemModifier";
+import weapon from "../../affixes/weapon";
 
-export default class IncreasePhysicalDamage extends Modifier<Weapon> {
-    constructor(location: Location.weapon | Location.offHand, isPrefix: boolean, type: number, tier: number) {
+export default class IncreasePhysicalDamage extends ItemModifier<Weapon> {
+    constructor(type: number, tier: number, isNeededPrecalculation: boolean = true) {
         super();
-        this.affixType = isPrefix ? 'prefix' : 'suffix';
-        this.location = location;
+        this.affixType = 'prefix';
+        this.location = Location.weapon;
         this.type = type;
         this.tier = tier;
+        this.isNeededPreCalculation = isNeededPrecalculation;
     }
 
-    apply = (weapon: Weapon) => {
+    apply = (weapon: Weapon | number) => {
         if (!weapon)
             return 0;
 
         return this.innerApply(weapon, this.applyCallback);
     };
 
-    applyCallback: (data: Weapon, affix: Affix) => number[] = (data, affix) => {
+    applyCallback: (data: Weapon | number, affix: Affix) => number[] = (data, affix) => {
+        if (typeof data === 'number') return [data];
         if (affix.from.max === affix.from.min && affix.to.max === affix.to.min) {
             return [data.minDamage * (1 + (affix.from.min / 100))];
         }

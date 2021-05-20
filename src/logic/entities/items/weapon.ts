@@ -1,5 +1,4 @@
 import EquippableItem from "./info/equippableItem";
-import WeaponModifier from './modifiers/weaponModifier';
 
 export default class Weapon extends EquippableItem<Weapon> {
     maxDamage: number;
@@ -7,8 +6,11 @@ export default class Weapon extends EquippableItem<Weapon> {
 
     //EQUIPPABLE ITEMS WILL REQUIRE 
 
-    constructor(name: string, description: string, image: string) {
+    constructor(name: string, description: string, image: string, maxDamage: number, minDamage: number) {
         super(name, description, image);
+
+        this.maxDamage = maxDamage;
+        this.minDamage = minDamage;
     }
 
     getDamageWithModifiers = () => {
@@ -29,6 +31,19 @@ export default class Weapon extends EquippableItem<Weapon> {
                 return acc;
             }, 0)
         };
+    };
+
+    getBaseDamageRoll = () => {
+        const preCalcDmg = this.getDamageWithModifiers();
+
+        return (Math.random() * (preCalcDmg.max - (preCalcDmg.min + 1))) + preCalcDmg.min;
+    };
+
+    getFinalDamage = () => {
+        return this.modifiers.filter(entry => !entry.isNeededPreCalculation).reduce((acc, next) => {
+            acc = next.apply(acc)[0];
+            return acc;
+        }, this.getBaseDamageRoll());
     };
 
     // get baseDamageRoll() {

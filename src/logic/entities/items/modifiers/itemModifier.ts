@@ -1,7 +1,7 @@
 import Location from '../info/itemLocations';
 import Affix, { getAffixesForLocation } from '../affixes';
 
-export default abstract class Modifier<T> {
+export default abstract class ItemModifier<T> {
     public get name(): string {
         return this.getModifierInfo().name;
     }
@@ -19,11 +19,11 @@ export default abstract class Modifier<T> {
 
     isPrefix: boolean;
 
-    abstract apply: (data: T) => number[];
+    abstract apply: (data: T | number) => number[];
 
-    innerApply = (data: T, callback: (weapon: T, affix: Affix) => any = () => 0) => callback(data, getAffixesForLocation(this.location)[this.affixType][this.type][this.tier]);
+    innerApply = (data: T | number, callback: (weapon: T | number, affix: Affix) => any = () => 0) => callback(data, getAffixesForLocation(this.location)[this.affixType][this.type][this.tier]);
 
-    abstract applyCallback: (data: T, affix: Affix) => any;
+    abstract applyCallback: (data: T | number, affix: Affix) => any;
 
     getModifierInfo = () => {
         return getAffixesForLocation(this.location)[this.affixType][this.type][this.tier];

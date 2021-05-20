@@ -1,8 +1,8 @@
 import Item from "./item";
-import Modifier from "../modifiers/modifier";
+import ItemModifier from "../modifiers/itemModifier";
 
 export default class EquippableItem<Y> extends Item {
-    modifiers: Modifier<Y>[] = [];
+    modifiers: ItemModifier<Y>[] = [];
 
     constructor(name: string, description: string, image: string) {
         super(name, description, image);
