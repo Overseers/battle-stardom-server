@@ -8,7 +8,7 @@ export default class EquippableItem<Y> extends Item {
         super(name, description, image);
     }
 
-    toJSON() {
+    toJSON: () => any = () => {
         return {
             name: this.name,
             description: this.description,

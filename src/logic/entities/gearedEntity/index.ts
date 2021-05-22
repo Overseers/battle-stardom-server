@@ -10,13 +10,25 @@ export default class GearedEntity extends Entity {
     gloves: undefined;
     boots: undefined;
 
+    attackModifiers: undefined[] = [];
+    defenseModifiers: undefined[] = [];
+
     constructor(health: number, name: string) {
         super(health, name);
         this.mainHand = premade.fist;
     }
 
-    get getAttackRoll(): number {
-        throw new Error("Method not implemented.");
+    get getAttackSpeed(): number {
+        // check if dual wield, more attack speed
+
+        return this.mainHand.attackSpeed; //check modifiers for attack speed scaling
     }
-    takeDamage: (damage: number) => number;
+
+    get getAttackRoll(): number {
+        return this.mainHand.getFinalDamage();
+    }
+
+    takeDamage: (damage: number) => void = (damage) => {
+        this.health = Math.max(this.health - damage, 0);
+    };
 }

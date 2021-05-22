@@ -11,7 +11,7 @@ export default abstract class Entity {
 
     abstract get getAttackRoll(): number;
 
-    abstract takeDamage: (damage: number) => number;
+    abstract takeDamage: (damage: number) => void;
     //     = (damage: number) => {
     //     const calculatedDamage = Number((damage * ((1 - (0.06 * this.defencePower)) / (1 + (0.06 * this.defencePower)))).toFixed(2));
     //     // console.log('NEW CALC:', calculatedDamage);

@@ -4,13 +4,14 @@ export default class Weapon extends EquippableItem<Weapon> {
     maxDamage: number;
     minDamage: number;
 
-    //EQUIPPABLE ITEMS WILL REQUIRE 
+    attackSpeed: number;
 
-    constructor(name: string, description: string, image: string, maxDamage: number, minDamage: number) {
+    constructor(name: string, description: string, image: string, minDamage: number, maxDamage: number, attackSpeed: number) {
         super(name, description, image);
 
         this.maxDamage = maxDamage;
         this.minDamage = minDamage;
+        this.attackSpeed = attackSpeed;
     }
 
     getDamageWithModifiers = () => {
@@ -29,14 +30,14 @@ export default class Weapon extends EquippableItem<Weapon> {
                     acc = applied[1];
                 }
                 return acc;
-            }, 0)
+            }, this.maxDamage)
         };
     };
 
     getBaseDamageRoll = () => {
         const preCalcDmg = this.getDamageWithModifiers();
 
-        return (Math.random() * (preCalcDmg.max - (preCalcDmg.min + 1))) + preCalcDmg.min;
+        return Number(((Math.random() * (preCalcDmg.max - (preCalcDmg.min))) + preCalcDmg.min).toFixed(2));
     };
 
     getFinalDamage = () => {
@@ -44,6 +45,15 @@ export default class Weapon extends EquippableItem<Weapon> {
             acc = next.apply(acc)[0];
             return acc;
         }, this.getBaseDamageRoll());
+    };
+
+    toJSON = () => {
+        return {
+            ...super.toJSON(),
+            maxDamage: this.maxDamage,
+            minDamage: this.minDamage,
+            attackSpeed: this.attackSpeed
+        };
     };
 
     // get baseDamageRoll() {

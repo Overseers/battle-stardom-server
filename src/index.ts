@@ -86,32 +86,39 @@ server.listen(config.port, () => {
     // });
 });
 
-import EquippableItem from './logic/entities/items/equippableItem';
+import Weapon from './logic/entities/items/weapon';
+import GearedEntity from './logic/entities/gearedEntity';
 
-const weapon = new EquippableItem('my weapon', 'my detailed weapon description', '');
+
+let player = new GearedEntity(100, 'user');
+const weapon = new Weapon('my weapon', 'my detailed weapon description', '', 1, 10, 1.25);
 
 console.log(JSON.stringify(weapon));
+console.log(player.getAttackRoll);
 
-// import Battle from './logic/battle';
+import Battle from './logic/battle';
 // import Entity from './logic/entities';
 // import { ItemBases, ItemLocation } from './logic/items/itemBase';
 
-// const nick = new Entity(100, 'Nick');
+const nick = new GearedEntity(100, 'Nick');
+nick.mainHand = weapon;
 // nick.equipWeapon(ItemBases[ItemLocation.Mainhand].testSword);
 
-// const Zach = new Entity(100, 'Zach');
+const Zach = new GearedEntity(100, 'Zach');
 // Zach.equipWeapon(ItemBases[ItemLocation.Mainhand].fist);
 
-// const battle = new Battle(nick, Zach);
+const battle = new Battle(nick, Zach);
 
-// battle.fight((totalStep) => {
-//     // console.log(totalStep);
-//     if (totalStep.challengerAttack) {
-//         console.log(`${nick.name} dealt ${totalStep.challengerAttack.damageRoll.damage} with ${nick.mainHand.name} to ${Zach.name} dealing a total of ${totalStep.challengerAttack.damageTaken}. ${Zach.name} has ${Zach.health} / ${Zach.maxHealth} left.`);
-//     }
-//     if (totalStep.defenderAttack) {
-//         console.log(`${Zach.name} dealt ${totalStep.defenderAttack.damageRoll.damage} with ${Zach.mainHand.name} to ${nick.name} dealing a total of ${totalStep.defenderAttack.damageTaken}. ${nick.name} has ${nick.health} / ${nick.maxHealth} left.`);
-//     }
-// }, () => { });
+battle.fight((totalStep) => {
+    // console.log(totalStep);
+    if (totalStep.challengerAttack) {
+        console.log(`${nick.name} dealt ${totalStep.challengerAttack.damageRoll.toFixed(2)} with ${nick.mainHand.name} to ${Zach.name} dealing a total of ${totalStep.challengerAttack.damageTaken.toFixed(2)}. ${Zach.name} has ${Zach.health.toFixed(2)} / ${Zach.maxHealth.toFixed(2)} left.`);
+    }
+    if (totalStep.defenderAttack) {
+        console.log(`${Zach.name} dealt ${totalStep.defenderAttack.damageRoll.toFixed(2)} with ${Zach.mainHand.name} to ${nick.name} dealing a total of ${totalStep.defenderAttack.damageTaken.toFixed(2)}. ${nick.name} has ${nick.health.toFixed(2)} / ${nick.maxHealth.toFixed(2)} left.`);
+    }
+}, (winner, player) => {
+    console.log(`${player.name} is the ${winner ? 'winner.' : 'loser.'}`);
+});
 
 // console.log(1 + (1.5 / 100));

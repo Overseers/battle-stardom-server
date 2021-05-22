@@ -1,6 +1,7 @@
 import { pubsub } from "./graphql";
-import Entity from "./logic/entities";
-import Player from './logic/player';
+import GearedEntity from './logic/entities/gearedEntity';
+// import Entity from "./logic/entities";
+// import Player from './logic/player';
 
 export interface FirebaserUser {
     iss: string;
@@ -18,7 +19,7 @@ export interface FirebaserUser {
 
 interface userSession {
     firebaseUser: FirebaserUser;
-    gameUser?: Player;
+    gameUser?: GearedEntity;
     sessionCreated: Date,
     lastUpdated: Date,
     sid: string;
@@ -31,8 +32,8 @@ let session: {
 const players = {
     playerCount: () => Object.keys(session).length,
     registerPlayer: (user: userSession) => {
-        let player = new Player(user.firebaseUser.email);
-        player.enemies = [new Entity(100, 'Test Enemy'), new Entity(100, 'Test Enemy2')];
+        let player = new GearedEntity(100, user.firebaseUser.email);
+        // player.enemies = [new Entity(100, 'Test Enemy'), new Entity(100, 'Test Enemy2')];
         // console.log(player.enemies);
         session[user.sid] = {
             ...user,
