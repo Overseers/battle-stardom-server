@@ -9,13 +9,13 @@ export const Subscription: SubscriptionResolvers<{
     deltaPlayerCount: {
         subscribe: (a, b, c) => pubsub.asyncIterator('deltaPlayerCount')
     },
-    playerUpdate: {
-        subscribe: withFilter(
-            (root, args, context, info) => pubsub.asyncIterator('playerUpdate'),
-            (payload, variables) => {
-                console.log('filter:', payload, variables);
-                return true;
-            }
-        )
-    }
+    // playerUpdate: {
+    //     subscribe: withFilter(
+    //         (root, args, context, info) => pubsub.asyncIterator('playerUpdate'),
+    //         (payload, variables) => {
+    //             console.log('filter:', payload, variables);
+    //             return true;
+    //         }
+    //     )
+    // }
 };

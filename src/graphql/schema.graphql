@@ -1,42 +1,26 @@
 type Query {
     playerCount: Int
-    test: String
-    getEnemies: [EnemyEntity]
-    getPlayer: PlayerEntity
+    getPlayerData: Player
+    getEnemies: [GearedEntity]
 }
 
 type Subscription {
     deltaPlayerCount: Int
-    playerUpdate(uuid: String!): Player
 }
 
 type Player {
-    email: String!
-    uid: String!
-}
-
-type PlayerEntity {
-    health: Int
-    maxHealth: Int
-    defencePower: Int
-    attackPower: Int
-    weapon: Weapon
-    name: String
-}
-
-type Enemy {
-    attackPower: Int
-    defensePower: Int
-    life: Int
-    attacksPerSecond: Int
-}
-
-type EnemyEntity {
-    health: Int
-    maxHealth: Int
-    defencePower: Int
-    attackPower: Int
     mainHand: Weapon
+    attackSpeed: Float
+    health: String
+    maxHealth: String
+    name: String
+    inventory: Inventory
+}
+
+type GearedEntity {
+    mainHand: Weapon
+    health: String
+    maxHealth: String
     name: String
 }
 
@@ -44,7 +28,35 @@ type Weapon {
     name: String
     description: String
     image: String
-    minDamage: Float
     maxDamage: Float
+    minDamage: Float
     attackSpeed: Float
+    modifiers: [WeaponAffix]
+}
+
+type WeaponAffix {
+    name: String
+    tier: Int
+    description: String
+    from: WeaponAffixRollable
+    to: WeaponAffixRollable
+    isPrefix: Boolean
+    rollMin: Float
+    rollMax: Float
+}
+
+type WeaponAffixRollable {
+    min: Float
+    max: Float
+}
+
+type Inventory {
+    items: [Item]
+    maxSize: Int
+}
+
+type Item {
+    name: String
+    description: String
+    image: String
 }

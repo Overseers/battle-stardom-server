@@ -31,4 +31,14 @@ export default class GearedEntity extends Entity {
     takeDamage: (damage: number) => void = (damage) => {
         this.health = Math.max(this.health - damage, 0);
     };
+
+    toObject = () => {
+        return {
+            mainHand: this.mainHand,
+            health: this.health,
+            maxHealth: this.maxHealth,
+            name: this.name,
+            attackSpeed: this.getAttackSpeed
+        };
+    };
 }

@@ -5,11 +5,11 @@ export default class Inventory {
     maxSize: number;
     constructor(maxSize: number = 30) {
         this.maxSize = maxSize;
-        this.items = Array(maxSize).fill(undefined);
+        this.items = Array(maxSize).fill(null);
     }
 
     addItem = (item: Item) => {
-        const index = this.items.findIndex(entry => entry === undefined);
+        const index = this.items.findIndex(entry => entry === null);
 
         if (index !== -1) {
             this.items[index] = item;
@@ -21,28 +21,36 @@ export default class Inventory {
     };
 
     removeItem = (item: Item | number) => {
+
         if (typeof item === 'number') {
             const itemReturn = this.items[item];
-            this.items[item] = undefined;
+            this.items[item] = null;
             return itemReturn;
         }
 
         const index = this.items.findIndex(entry => JSON.stringify(entry) === JSON.stringify(item));
 
         if (index !== -1) {
-            this.items[index] = undefined;
+            this.items[index] = null;
             return item;
         } else {
             //notify player failed to find item to delete
-            return undefined;
+            return null;
         }
     };
 
     increaseInventorySize = (amountToIncreaseBy: number) => {
         const previousInventory = [...this.items];
-        this.items = [...previousInventory, ...Array(amountToIncreaseBy).fill(undefined)];
+        this.items = [...previousInventory, ...Array(amountToIncreaseBy).fill(null)];
 
         this.maxSize += amountToIncreaseBy;
+    };
+
+    toObject = () => {
+        return {
+            items: this.items.map(entry => entry?.toJSON()),
+            maxSize: this.maxSize
+        };
     };
 }
 

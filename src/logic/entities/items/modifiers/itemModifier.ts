@@ -10,6 +10,9 @@ export default abstract class ItemModifier<T> {
         return this.getModifierInfo().description;
     }
 
+    rollMin: number;
+    rollMax: number;
+
     affixType: 'prefix' | 'suffix';
     location: Location;
     type: number;
