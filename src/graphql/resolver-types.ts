@@ -12,6 +12,12 @@ export type Scalars = {
   Float: number;
 };
 
+export type BattleStep = {
+  __typename?: 'BattleStep';
+  challengerAttack?: Maybe<Step>;
+  defenderAttack?: Maybe<Step>;
+};
+
 export type GearedEntity = {
   __typename?: 'GearedEntity';
   mainHand?: Maybe<Weapon>;
@@ -50,9 +56,16 @@ export type Query = {
   getEnemies?: Maybe<Array<Maybe<GearedEntity>>>;
 };
 
+export type Step = {
+  __typename?: 'Step';
+  damageRoll?: Maybe<Scalars['Float']>;
+  damageTaken?: Maybe<Scalars['Float']>;
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   deltaPlayerCount?: Maybe<Scalars['Int']>;
+  my_battle?: Maybe<BattleStep>;
 };
 
 export type Weapon = {
@@ -162,6 +175,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  BattleStep: ResolverTypeWrapper<BattleStep>;
   GearedEntity: ResolverTypeWrapper<GearedEntity>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Inventory: ResolverTypeWrapper<Inventory>;
@@ -170,6 +184,7 @@ export type ResolversTypes = {
   Player: ResolverTypeWrapper<Player>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Query: ResolverTypeWrapper<{}>;
+  Step: ResolverTypeWrapper<Step>;
   Subscription: ResolverTypeWrapper<{}>;
   Weapon: ResolverTypeWrapper<Weapon>;
   WeaponAffix: ResolverTypeWrapper<WeaponAffix>;
@@ -179,6 +194,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  BattleStep: BattleStep;
   GearedEntity: GearedEntity;
   String: Scalars['String'];
   Inventory: Inventory;
@@ -187,11 +203,18 @@ export type ResolversParentTypes = {
   Player: Player;
   Float: Scalars['Float'];
   Query: {};
+  Step: Step;
   Subscription: {};
   Weapon: Weapon;
   WeaponAffix: WeaponAffix;
   Boolean: Scalars['Boolean'];
   WeaponAffixRollable: WeaponAffixRollable;
+};
+
+export type BattleStepResolvers<ContextType = any, ParentType extends ResolversParentTypes['BattleStep'] = ResolversParentTypes['BattleStep']> = {
+  challengerAttack?: Resolver<Maybe<ResolversTypes['Step']>, ParentType, ContextType>;
+  defenderAttack?: Resolver<Maybe<ResolversTypes['Step']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type GearedEntityResolvers<ContextType = any, ParentType extends ResolversParentTypes['GearedEntity'] = ResolversParentTypes['GearedEntity']> = {
@@ -231,8 +254,15 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getEnemies?: Resolver<Maybe<Array<Maybe<ResolversTypes['GearedEntity']>>>, ParentType, ContextType>;
 };
 
+export type StepResolvers<ContextType = any, ParentType extends ResolversParentTypes['Step'] = ResolversParentTypes['Step']> = {
+  damageRoll?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  damageTaken?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   deltaPlayerCount?: SubscriptionResolver<Maybe<ResolversTypes['Int']>, "deltaPlayerCount", ParentType, ContextType>;
+  my_battle?: SubscriptionResolver<Maybe<ResolversTypes['BattleStep']>, "my_battle", ParentType, ContextType>;
 };
 
 export type WeaponResolvers<ContextType = any, ParentType extends ResolversParentTypes['Weapon'] = ResolversParentTypes['Weapon']> = {
@@ -265,11 +295,13 @@ export type WeaponAffixRollableResolvers<ContextType = any, ParentType extends R
 };
 
 export type Resolvers<ContextType = any> = {
+  BattleStep?: BattleStepResolvers<ContextType>;
   GearedEntity?: GearedEntityResolvers<ContextType>;
   Inventory?: InventoryResolvers<ContextType>;
   Item?: ItemResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Step?: StepResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Weapon?: WeaponResolvers<ContextType>;
   WeaponAffix?: WeaponAffixResolvers<ContextType>;

@@ -3,14 +3,11 @@ import path from 'path';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 // import { withFilter } from 'graphql-subscriptions';
 import redis from 'ioredis';
-import { players, session } from '../data';
 import config from '../util/config';
-import { withFilter } from 'apollo-server-express';
 import { Query } from './Query';
 import { Subscription } from './Subscription';
 import { Mutation } from './Mutation';
 import { Resolvers, ResolverFn } from './resolver-types';
-import Entity from '../logic/entities';
 
 const redisOptions: redis.RedisOptions = {
     host: config.redisDomainName,

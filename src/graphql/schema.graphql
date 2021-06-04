@@ -6,6 +6,17 @@ type Query {
 
 type Subscription {
     deltaPlayerCount: Int
+    my_battle: BattleStep
+}
+
+type BattleStep {
+    challengerAttack: Step
+    defenderAttack: Step
+}
+
+type Step {
+    damageRoll: Float
+    damageTaken: Float
 }
 
 type Player {

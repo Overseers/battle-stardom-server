@@ -43,7 +43,7 @@ export default class Battle {
         };
     };
 
-    fight = (onNextFightStep: (totalStep: TotalStep) => void, onWin: (winner: boolean, player: GearedEntity) => void) => {
+    getFightStep = (onFightStep: (totalStep: TotalStep) => void, onWin: (winner: boolean, player: GearedEntity) => void) => {
         // console.log('hello');
         let challengerAttack = -1;
 
@@ -82,7 +82,7 @@ export default class Battle {
         }
 
         if (defenderAttack !== -1 || challengerAttack !== -1) {
-            onNextFightStep?.({
+            onFightStep?.({
                 challengerAttack: this.history[challengerAttack]?.step,
                 defenderAttack: this.history[defenderAttack]?.step
             });
@@ -90,10 +90,6 @@ export default class Battle {
 
         if (this.victory !== -1) {
             onWin?.(this.victory ? true : false, this.challenger);
-        }
-
-        if (this.victory === -1) {
-            setTimeout(() => this.fight(onNextFightStep, onWin), this.fightTickMs);
         }
     };
 }

@@ -88,6 +88,7 @@ server.listen(config.port, () => {
 
 import Weapon from './logic/entities/items/weapon';
 import GearedEntity from './logic/entities/gearedEntity';
+import { registerBattle } from './logic';
 
 
 let player = new GearedEntity(100, 'user');
@@ -106,19 +107,10 @@ nick.mainHand = weapon;
 
 const Zach = new GearedEntity(100, 'Zach');
 // Zach.equipWeapon(ItemBases[ItemLocation.Mainhand].fist);
-
-const battle = new Battle(nick, Zach);
-
-battle.fight((totalStep) => {
-    // console.log(totalStep);
-    if (totalStep.challengerAttack) {
-        console.log(`${nick.name} dealt ${totalStep.challengerAttack.damageRoll.toFixed(2)} with ${nick.mainHand.name} to ${Zach.name} dealing a total of ${totalStep.challengerAttack.damageTaken.toFixed(2)}. ${Zach.name} has ${Zach.health.toFixed(2)} / ${Zach.maxHealth.toFixed(2)} left.`);
-    }
-    if (totalStep.defenderAttack) {
-        console.log(`${Zach.name} dealt ${totalStep.defenderAttack.damageRoll.toFixed(2)} with ${Zach.mainHand.name} to ${nick.name} dealing a total of ${totalStep.defenderAttack.damageTaken.toFixed(2)}. ${nick.name} has ${nick.health.toFixed(2)} / ${nick.maxHealth.toFixed(2)} left.`);
-    }
-}, (winner, player) => {
-    console.log(`${player.name} is the ${winner ? 'winner.' : 'loser.'}`);
+registerBattle({
+    initiator: '',
+    initiatorEntity: nick,
+    enemyEntity: Zach
 });
 
 // console.log(1 + (1.5 / 100));
