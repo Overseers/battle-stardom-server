@@ -2,7 +2,7 @@ import { pubsub } from '../graphql';
 import Battle from './battle';
 import Entity from './entities';
 import GearedEntity from './entities/gearedEntity';
-import Player from './player';
+import Player from './entities/gearedEntity/player';
 
 const battles: ({
     initiator: string;
@@ -29,7 +29,7 @@ export const registerBattle = ({
     enemyEntity
 }: ({
     initiator: string;
-    initiatorEntity: GearedEntity;
+    initiatorEntity: Player;
     enemyEntity: GearedEntity;
 })) => {
     battles.push({

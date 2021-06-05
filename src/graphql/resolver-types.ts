@@ -16,6 +16,8 @@ export type BattleStep = {
   __typename?: 'BattleStep';
   challengerAttack?: Maybe<Step>;
   defenderAttack?: Maybe<Step>;
+  challengerInfo?: Maybe<GearedEntity>;
+  defenderInfo?: Maybe<GearedEntity>;
 };
 
 export type GearedEntity = {
@@ -24,6 +26,7 @@ export type GearedEntity = {
   health?: Maybe<Scalars['String']>;
   maxHealth?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
+  attackSpeed?: Maybe<Scalars['Float']>;
 };
 
 export type Inventory = {
@@ -60,6 +63,7 @@ export type Step = {
   __typename?: 'Step';
   damageRoll?: Maybe<Scalars['Float']>;
   damageTaken?: Maybe<Scalars['Float']>;
+  currentHealth?: Maybe<Scalars['Float']>;
 };
 
 export type Subscription = {
@@ -178,11 +182,11 @@ export type ResolversTypes = {
   BattleStep: ResolverTypeWrapper<BattleStep>;
   GearedEntity: ResolverTypeWrapper<GearedEntity>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Inventory: ResolverTypeWrapper<Inventory>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Item: ResolverTypeWrapper<Item>;
   Player: ResolverTypeWrapper<Player>;
-  Float: ResolverTypeWrapper<Scalars['Float']>;
   Query: ResolverTypeWrapper<{}>;
   Step: ResolverTypeWrapper<Step>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -197,11 +201,11 @@ export type ResolversParentTypes = {
   BattleStep: BattleStep;
   GearedEntity: GearedEntity;
   String: Scalars['String'];
+  Float: Scalars['Float'];
   Inventory: Inventory;
   Int: Scalars['Int'];
   Item: Item;
   Player: Player;
-  Float: Scalars['Float'];
   Query: {};
   Step: Step;
   Subscription: {};
@@ -214,6 +218,8 @@ export type ResolversParentTypes = {
 export type BattleStepResolvers<ContextType = any, ParentType extends ResolversParentTypes['BattleStep'] = ResolversParentTypes['BattleStep']> = {
   challengerAttack?: Resolver<Maybe<ResolversTypes['Step']>, ParentType, ContextType>;
   defenderAttack?: Resolver<Maybe<ResolversTypes['Step']>, ParentType, ContextType>;
+  challengerInfo?: Resolver<Maybe<ResolversTypes['GearedEntity']>, ParentType, ContextType>;
+  defenderInfo?: Resolver<Maybe<ResolversTypes['GearedEntity']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -222,6 +228,7 @@ export type GearedEntityResolvers<ContextType = any, ParentType extends Resolver
   health?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   maxHealth?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  attackSpeed?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -257,6 +264,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 export type StepResolvers<ContextType = any, ParentType extends ResolversParentTypes['Step'] = ResolversParentTypes['Step']> = {
   damageRoll?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   damageTaken?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  currentHealth?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

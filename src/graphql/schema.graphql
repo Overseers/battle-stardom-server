@@ -12,11 +12,14 @@ type Subscription {
 type BattleStep {
     challengerAttack: Step
     defenderAttack: Step
+    challengerInfo: GearedEntity
+    defenderInfo: GearedEntity
 }
 
 type Step {
     damageRoll: Float
     damageTaken: Float
+    currentHealth: Float
 }
 
 type Player {
@@ -33,6 +36,7 @@ type GearedEntity {
     health: String
     maxHealth: String
     name: String
+    attackSpeed: Float
 }
 
 type Weapon {

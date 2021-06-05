@@ -1,18 +1,24 @@
 import { withFilter } from "graphql-subscriptions";
 import { pubsub, SessionType } from ".";
-import { SubscriptionResolvers } from './resolver-types';
-//ts-ignore
+import { SubscriptionResolvers, SubscriptionResolver } from './resolver-types';
+// ts-ignore
 export const Subscription: SubscriptionResolvers<SessionType> = {
     deltaPlayerCount: {
         subscribe: (a, b, c) => pubsub.asyncIterator('deltaPlayerCount')
     },
     my_battle: {
-        subscribe: (a, b, c) => {
-            console.log(a, b, c);
-            return pubsub.asyncIterator('my_battle');
-        },
+        subscribe: withFilter(() => pubsub.asyncIterator('my_battle'), (a, b, c, d) => {
+            // console.log("PAY ATTENTION", a, b, c, d);
+
+            return a.battleOwner === c.session;
+        }),
         resolve: (payload) => {
-            return payload;
+            return Object.keys(payload).reduce((acc, next) => {
+                if (next !== 'id') {
+                    acc[next] = payload[next];
+                }
+                return acc;
+            }, {});
         }
 
     }

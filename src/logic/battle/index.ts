@@ -1,5 +1,6 @@
 import Entity from "../entities";
 import GearedEntity from "../entities/gearedEntity";
+import Player from "../entities/gearedEntity/player";
 import { ModifierReturn } from "../items/modifier";
 import Weapon from "../items/weapon";
 
@@ -11,15 +12,19 @@ interface FightStep {
 interface Step {
     damageRoll: number;
     damageTaken: number;
+    currentHealth: number;
 }
 
 interface TotalStep {
+    battleOwner: string;
     challengerAttack: Step;
     defenderAttack: Step;
+    challengerInfo: GearedEntity;
+    defenderInfo: GearedEntity;
 }
 
 export default class Battle {
-    challenger: GearedEntity;
+    challenger: Player;
     defender: GearedEntity;
     history: FightStep[] = [];
     nextChallengerAttack: number = 0; //each step is 100ms
@@ -27,7 +32,7 @@ export default class Battle {
     victory: -1 | 0 | 1 = -1;
     private fightTickMs = 100;
 
-    constructor(challenger: GearedEntity, defender: GearedEntity) {
+    constructor(challenger: Player, defender: GearedEntity) {
         this.challenger = challenger;
         this.defender = defender;
     }
@@ -39,7 +44,8 @@ export default class Battle {
         damageTaken -= second.health;
         return {
             damageRoll,
-            damageTaken
+            damageTaken,
+            currentHealth: second.health
         };
     };
 
@@ -83,8 +89,11 @@ export default class Battle {
 
         if (defenderAttack !== -1 || challengerAttack !== -1) {
             onFightStep?.({
+                battleOwner: this.challenger.sessionId,
                 challengerAttack: this.history[challengerAttack]?.step,
-                defenderAttack: this.history[defenderAttack]?.step
+                defenderAttack: this.history[defenderAttack]?.step,
+                challengerInfo: this.challenger,
+                defenderInfo: this.defender
             });
         }
 

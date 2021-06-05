@@ -9,7 +9,6 @@ import config from './util/config';
 import { resolvers, schema } from './graphql';
 import { players, FirebaserUser, session } from './data';
 import { v4 } from 'uuid';
-import { IResolvers } from 'graphql-tools';
 
 const express = app();
 
@@ -75,42 +74,4 @@ gqlServer.installSubscriptionHandlers(server);
 
 server.listen(config.port, () => {
     console.log('Server Online on port:', config.port);
-    // SubscriptionServer.create({
-    //     execute,
-    //     subscribe,
-    //     schema: buildSchema(schema)
-    // }, {
-    //     server,
-    //     port: 8081,
-    //     path: '/api/subscriptions'
-    // });
 });
-
-import Weapon from './logic/entities/items/weapon';
-import GearedEntity from './logic/entities/gearedEntity';
-import { registerBattle } from './logic';
-
-
-let player = new GearedEntity(100, 'user');
-const weapon = new Weapon('my weapon', 'my detailed weapon description', '', 1, 10, 1.25);
-
-console.log(JSON.stringify(weapon));
-console.log(player.getAttackRoll);
-
-import Battle from './logic/battle';
-// import Entity from './logic/entities';
-// import { ItemBases, ItemLocation } from './logic/items/itemBase';
-
-const nick = new GearedEntity(100, 'Nick');
-nick.mainHand = weapon;
-// nick.equipWeapon(ItemBases[ItemLocation.Mainhand].testSword);
-
-const Zach = new GearedEntity(100, 'Zach');
-// Zach.equipWeapon(ItemBases[ItemLocation.Mainhand].fist);
-registerBattle({
-    initiator: '',
-    initiatorEntity: nick,
-    enemyEntity: Zach
-});
-
-// console.log(1 + (1.5 / 100));
