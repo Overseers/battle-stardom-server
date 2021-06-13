@@ -21,6 +21,7 @@ interface TotalStep {
     defenderAttack: Step;
     challengerInfo: GearedEntity;
     defenderInfo: GearedEntity;
+    finished: boolean;
 }
 
 export default class Battle {
@@ -35,6 +36,7 @@ export default class Battle {
     constructor(challenger: Player, defender: GearedEntity) {
         this.challenger = challenger;
         this.defender = defender;
+        // console.log(challenger, defender);
     }
 
     private nextFightStep = (first: GearedEntity, second: GearedEntity) => {
@@ -49,7 +51,7 @@ export default class Battle {
         };
     };
 
-    getFightStep = (onFightStep: (totalStep: TotalStep) => void, onWin: (winner: boolean, player: GearedEntity) => void) => {
+    getFightStep = (onFightStep: (totalStep: TotalStep) => void, onWin: (winner: boolean, winningStep: TotalStep) => void) => {
         // console.log('hello');
         let challengerAttack = -1;
 
@@ -93,12 +95,20 @@ export default class Battle {
                 challengerAttack: this.history[challengerAttack]?.step,
                 defenderAttack: this.history[defenderAttack]?.step,
                 challengerInfo: this.challenger,
-                defenderInfo: this.defender
+                defenderInfo: this.defender,
+                finished: false
             });
         }
 
         if (this.victory !== -1) {
-            onWin?.(this.victory ? true : false, this.challenger);
+            onWin?.(this.victory ? true : false, ({
+                battleOwner: this.challenger.sessionId,
+                challengerAttack: this.history[challengerAttack]?.step,
+                defenderAttack: this.history[defenderAttack]?.step,
+                challengerInfo: this.challenger,
+                defenderInfo: this.defender,
+                finished: true
+            }));
         }
     };
 }

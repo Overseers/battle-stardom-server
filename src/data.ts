@@ -36,8 +36,10 @@ const players = {
     playerCount: () => Object.keys(session).length,
     registerPlayer: (user: userSession) => {
         let player = new Player(100, 'Pertinate', user.sid);
+        let enemy = new GearedEntity(100, 'Zach');
+        enemy.mainHand = new Weapon('Super Mega Weapon', 'sugoi', '', 5, 30, 1.6);
         player.enemies = [
-            new GearedEntity(100, 'Zach'),
+            enemy,
             new GearedEntity(100, 'Wes'),
             new GearedEntity(100, 'John')
         ];
@@ -46,13 +48,13 @@ const players = {
         const weapon = new Weapon('my weapon', 'my detailed weapon description', '', 1, 10, 1.25);
         player.mainHand = weapon;
 
-        const Zach = new GearedEntity(100, 'Zach');
-        // Zach.equipWeapon(ItemBases[ItemLocation.Mainhand].fist);
-        registerBattle({
-            initiator: '',
-            initiatorEntity: player,
-            enemyEntity: Zach
-        });
+        // const Zach = new GearedEntity(100, 'Zach');
+        // // Zach.equipWeapon(ItemBases[ItemLocation.Mainhand].fist);
+        // registerBattle({
+        //     initiator: '',
+        //     initiatorEntity: player,
+        //     enemyEntity: Zach
+        // });
         session[user.sid] = {
             ...user,
             gameUser: player

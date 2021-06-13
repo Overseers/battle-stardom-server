@@ -3,6 +3,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -18,6 +19,14 @@ export type BattleStep = {
   defenderAttack?: Maybe<Step>;
   challengerInfo?: Maybe<GearedEntity>;
   defenderInfo?: Maybe<GearedEntity>;
+  finished?: Maybe<Scalars['Boolean']>;
+};
+
+export type BattleWin = {
+  __typename?: 'BattleWin';
+  defender?: Maybe<GearedEntity>;
+  challenger?: Maybe<GearedEntity>;
+  victory?: Maybe<Scalars['Boolean']>;
 };
 
 export type GearedEntity = {
@@ -40,6 +49,16 @@ export type Item = {
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  initiateBattle?: Maybe<Initiation>;
+};
+
+
+export type MutationInitiateBattleArgs = {
+  index?: Maybe<Scalars['Int']>;
 };
 
 export type Player = {
@@ -70,6 +89,7 @@ export type Subscription = {
   __typename?: 'Subscription';
   deltaPlayerCount?: Maybe<Scalars['Int']>;
   my_battle?: Maybe<BattleStep>;
+  onBattleFinish?: Maybe<BattleWin>;
 };
 
 export type Weapon = {
@@ -99,6 +119,11 @@ export type WeaponAffixRollable = {
   __typename?: 'WeaponAffixRollable';
   min?: Maybe<Scalars['Float']>;
   max?: Maybe<Scalars['Float']>;
+};
+
+export type Initiation = {
+  __typename?: 'initiation';
+  success?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -180,39 +205,45 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   BattleStep: ResolverTypeWrapper<BattleStep>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  BattleWin: ResolverTypeWrapper<BattleWin>;
   GearedEntity: ResolverTypeWrapper<GearedEntity>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Inventory: ResolverTypeWrapper<Inventory>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Item: ResolverTypeWrapper<Item>;
+  Mutation: ResolverTypeWrapper<{}>;
   Player: ResolverTypeWrapper<Player>;
   Query: ResolverTypeWrapper<{}>;
   Step: ResolverTypeWrapper<Step>;
   Subscription: ResolverTypeWrapper<{}>;
   Weapon: ResolverTypeWrapper<Weapon>;
   WeaponAffix: ResolverTypeWrapper<WeaponAffix>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   WeaponAffixRollable: ResolverTypeWrapper<WeaponAffixRollable>;
+  initiation: ResolverTypeWrapper<Initiation>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   BattleStep: BattleStep;
+  Boolean: Scalars['Boolean'];
+  BattleWin: BattleWin;
   GearedEntity: GearedEntity;
   String: Scalars['String'];
   Float: Scalars['Float'];
   Inventory: Inventory;
   Int: Scalars['Int'];
   Item: Item;
+  Mutation: {};
   Player: Player;
   Query: {};
   Step: Step;
   Subscription: {};
   Weapon: Weapon;
   WeaponAffix: WeaponAffix;
-  Boolean: Scalars['Boolean'];
   WeaponAffixRollable: WeaponAffixRollable;
+  initiation: Initiation;
 };
 
 export type BattleStepResolvers<ContextType = any, ParentType extends ResolversParentTypes['BattleStep'] = ResolversParentTypes['BattleStep']> = {
@@ -220,6 +251,14 @@ export type BattleStepResolvers<ContextType = any, ParentType extends ResolversP
   defenderAttack?: Resolver<Maybe<ResolversTypes['Step']>, ParentType, ContextType>;
   challengerInfo?: Resolver<Maybe<ResolversTypes['GearedEntity']>, ParentType, ContextType>;
   defenderInfo?: Resolver<Maybe<ResolversTypes['GearedEntity']>, ParentType, ContextType>;
+  finished?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type BattleWinResolvers<ContextType = any, ParentType extends ResolversParentTypes['BattleWin'] = ResolversParentTypes['BattleWin']> = {
+  defender?: Resolver<Maybe<ResolversTypes['GearedEntity']>, ParentType, ContextType>;
+  challenger?: Resolver<Maybe<ResolversTypes['GearedEntity']>, ParentType, ContextType>;
+  victory?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -243,6 +282,10 @@ export type ItemResolvers<ContextType = any, ParentType extends ResolversParentT
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  initiateBattle?: Resolver<Maybe<ResolversTypes['initiation']>, ParentType, ContextType, RequireFields<MutationInitiateBattleArgs, never>>;
 };
 
 export type PlayerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
@@ -271,6 +314,7 @@ export type StepResolvers<ContextType = any, ParentType extends ResolversParentT
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   deltaPlayerCount?: SubscriptionResolver<Maybe<ResolversTypes['Int']>, "deltaPlayerCount", ParentType, ContextType>;
   my_battle?: SubscriptionResolver<Maybe<ResolversTypes['BattleStep']>, "my_battle", ParentType, ContextType>;
+  onBattleFinish?: SubscriptionResolver<Maybe<ResolversTypes['BattleWin']>, "onBattleFinish", ParentType, ContextType>;
 };
 
 export type WeaponResolvers<ContextType = any, ParentType extends ResolversParentTypes['Weapon'] = ResolversParentTypes['Weapon']> = {
@@ -302,11 +346,18 @@ export type WeaponAffixRollableResolvers<ContextType = any, ParentType extends R
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type InitiationResolvers<ContextType = any, ParentType extends ResolversParentTypes['initiation'] = ResolversParentTypes['initiation']> = {
+  success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   BattleStep?: BattleStepResolvers<ContextType>;
+  BattleWin?: BattleWinResolvers<ContextType>;
   GearedEntity?: GearedEntityResolvers<ContextType>;
   Inventory?: InventoryResolvers<ContextType>;
   Item?: ItemResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Step?: StepResolvers<ContextType>;
@@ -314,6 +365,7 @@ export type Resolvers<ContextType = any> = {
   Weapon?: WeaponResolvers<ContextType>;
   WeaponAffix?: WeaponAffixResolvers<ContextType>;
   WeaponAffixRollable?: WeaponAffixRollableResolvers<ContextType>;
+  initiation?: InitiationResolvers<ContextType>;
 };
 
 

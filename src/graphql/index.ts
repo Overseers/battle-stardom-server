@@ -32,7 +32,7 @@ export interface SessionType {
 
 const resolvers: Resolvers<SessionType> = {
     Query,
-    // Mutation,
+    Mutation,
     Subscription
 };
 

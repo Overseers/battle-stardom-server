@@ -7,6 +7,21 @@ type Query {
 type Subscription {
     deltaPlayerCount: Int
     my_battle: BattleStep
+    onBattleFinish: BattleWin
+}
+
+type Mutation {
+    initiateBattle(index: Int): initiation
+}
+
+type initiation {
+    success: Boolean
+}
+
+type BattleWin {
+    defender: GearedEntity
+    challenger: GearedEntity
+    victory: Boolean
 }
 
 type BattleStep {
@@ -14,6 +29,7 @@ type BattleStep {
     defenderAttack: Step
     challengerInfo: GearedEntity
     defenderInfo: GearedEntity
+    finished: Boolean
 }
 
 type Step {

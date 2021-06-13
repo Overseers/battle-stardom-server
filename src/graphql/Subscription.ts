@@ -21,6 +21,20 @@ export const Subscription: SubscriptionResolvers<SessionType> = {
             }, {});
         }
 
+    },
+    onBattleFinish: {
+        subscribe: withFilter(() => pubsub.asyncIterator('onBattleFinish'), (data, _, context) => {
+            console.log(data);
+            return data.id === context.session;
+        }),
+        resolve: (payload) => {
+            return Object.keys(payload).reduce((acc, next) => {
+                if (next !== 'id') {
+                    acc[next] = payload[next];
+                }
+                return acc;
+            }, {});
+        }
     }
     // playerUpdate: {
     //     subscribe: withFilter(
