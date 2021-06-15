@@ -1,4 +1,4 @@
-import EquippableItem from "./info/equippableItem";
+import EquippableItem from './info/equippableItem';
 
 export default class Weapon extends EquippableItem<Weapon> {
     maxDamage: number;
@@ -6,16 +6,15 @@ export default class Weapon extends EquippableItem<Weapon> {
 
     attackSpeed: number;
 
-    constructor(name: string, description: string, image: string, minDamage: number, maxDamage: number, attackSpeed: number) {
-        super(name, description, image);
-
-        this.maxDamage = maxDamage;
-        this.minDamage = minDamage;
-        this.attackSpeed = attackSpeed;
+    constructor(init: Partial<Weapon>) {
+        super(init);
+        for (const key in init) {
+            this[key] = init[key];
+        }
     }
 
     getDamageWithModifiers = () => {
-        const preCalculationModifiers = this.modifiers.filter(entry => entry.isNeededPreCalculation);
+        const preCalculationModifiers = this.modifiers.filter((entry) => entry.isNeededPreCalculation);
         return {
             min: preCalculationModifiers.reduce((acc, next) => {
                 const applied = next.apply(this);
@@ -30,21 +29,23 @@ export default class Weapon extends EquippableItem<Weapon> {
                     acc = applied[1];
                 }
                 return acc;
-            }, this.maxDamage)
+            }, this.maxDamage),
         };
     };
 
     getBaseDamageRoll = () => {
         const preCalcDmg = this.getDamageWithModifiers();
 
-        return Number(((Math.random() * (preCalcDmg.max - (preCalcDmg.min))) + preCalcDmg.min).toFixed(2));
+        return Number((Math.random() * (preCalcDmg.max - preCalcDmg.min) + preCalcDmg.min).toFixed(2));
     };
 
     getFinalDamage = () => {
-        return this.modifiers.filter(entry => !entry.isNeededPreCalculation).reduce((acc, next) => {
-            acc = next.apply(acc)[0];
-            return acc;
-        }, this.getBaseDamageRoll());
+        return this.modifiers
+            .filter((entry) => !entry.isNeededPreCalculation)
+            .reduce((acc, next) => {
+                acc = next.apply(acc)[0];
+                return acc;
+            }, this.getBaseDamageRoll());
     };
 
     toJSON = () => {
@@ -52,7 +53,7 @@ export default class Weapon extends EquippableItem<Weapon> {
             ...super.toJSON(),
             maxDamage: this.maxDamage,
             minDamage: this.minDamage,
-            attackSpeed: this.attackSpeed
+            attackSpeed: this.attackSpeed,
         };
     };
 

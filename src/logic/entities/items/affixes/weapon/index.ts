@@ -4,5 +4,5 @@ import suffix from "./suffix";
 
 export default {
     prefix: prefix,
-    suffix: suffix
+    suffix: suffix,
 } as LocationAffixes;

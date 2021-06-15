@@ -1,27 +1,27 @@
-import { Signale, SignaleOptions } from 'signale';
+import { Signale, SignaleOptions } from "signale";
 
 const options: SignaleOptions = {
     disabled: false,
     interactive: false,
-    logLevel: 'debug',
+    logLevel: "debug",
     secrets: [],
     types: {
         debug: {
-            badge: '',
-            color: 'green',
-            label: '[LOG] >'
+            badge: "",
+            color: "green",
+            label: "[LOG] >",
         },
         error: {
-            badge: '',
-            color: 'red',
-            label: '[ERROR] >'
+            badge: "",
+            color: "red",
+            label: "[ERROR] >",
         },
         warn: {
-            badge: '',
-            color: 'yellow',
-            label: '[WARN] >'
-        }
-    }
+            badge: "",
+            color: "yellow",
+            label: "[WARN] >",
+        },
+    },
 };
 
 const logger = new Signale(options);
@@ -30,7 +30,7 @@ logger.config({
     displayTimestamp: true,
     displayFilename: true,
     displayDate: true,
-    underlineLabel: false
+    underlineLabel: false,
 });
 
 console.log = logger.debug;

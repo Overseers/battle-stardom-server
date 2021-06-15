@@ -5,6 +5,6 @@ enum Location {
     body,
     legs,
     hands,
-    feet
+    feet,
 }
 export default Location;

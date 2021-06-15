@@ -10,12 +10,12 @@ export default [
             description: "Increased Physical Damage",
             from: {
                 min: 0,
-                max: 0
+                max: 0,
             },
             to: {
                 min: 15,
-                max: 15
-            }
-        }
-    ]
+                max: 15,
+            },
+        },
+    ],
 ];

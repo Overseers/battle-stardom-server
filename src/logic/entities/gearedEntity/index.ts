@@ -1,10 +1,10 @@
-import Entity from "..";
-import premade from "../items/premade";
-import Weapon from "../items/weapon";
+import Entity from '..';
+import premade from '../items/premade';
+import Weapon from '../items/weapon';
 
 export default class GearedEntity extends Entity {
     mainHand: Weapon;
-    offHand: undefined;//Weapon | Shield;
+    offHand: undefined; //Weapon | Shield;
     head: undefined;
     chest: undefined;
     gloves: undefined;
@@ -13,18 +13,27 @@ export default class GearedEntity extends Entity {
     attackModifiers: undefined[] = [];
     defenseModifiers: undefined[] = [];
 
-    constructor(health: number, name: string) {
-        super(health, name);
-        this.mainHand = premade.fist;
+    constructor(init: Partial<GearedEntity>) {
+        super(init);
+        for (const key in init) {
+            this[key] = init[key];
+        }
+        this.postConstructor();
     }
+
+    postConstructor = () => {
+        this.mainHand = new Weapon(this.mainHand || premade.fist);
+    };
 
     get getAttackSpeed(): number {
         // check if dual wield, more attack speed
+        console.log('attack speed:', this.mainHand);
 
         return this.mainHand.attackSpeed; //check modifiers for attack speed scaling
     }
 
     get getAttackRoll(): number {
+        console.log('attack roll:', this.mainHand);
         return this.mainHand.getFinalDamage();
     }
 
@@ -38,7 +47,7 @@ export default class GearedEntity extends Entity {
             health: this.health,
             maxHealth: this.maxHealth,
             name: this.name,
-            attackSpeed: this.getAttackSpeed
+            attackSpeed: this.getAttackSpeed,
         };
     };
 }

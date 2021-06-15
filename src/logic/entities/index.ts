@@ -1,12 +1,12 @@
 export default abstract class Entity {
-    health: number = 0;
-    maxHealth: number = 0;
+    health = 0;
+    maxHealth = 0;
     name: string;
 
-    constructor(health: number, name: string) {
-        this.health = health;
-        this.maxHealth = health;
-        this.name = name;
+    constructor(init: Partial<Entity>) {
+        for (const key in init) {
+            this[key] = init[key];
+        }
     }
 
     abstract get getAttackRoll(): number;
@@ -24,5 +24,3 @@ export default abstract class Entity {
         return JSON.stringify(this);
     }
 }
-
-

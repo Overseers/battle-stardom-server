@@ -1,8 +1,10 @@
-import { pubsub } from "./graphql";
-import { registerBattle } from "./logic";
-import GearedEntity from "./logic/entities/gearedEntity";
+import { pubsub } from './graphql';
+import { registerBattle } from './logic';
+import GearedEntity from './logic/entities/gearedEntity';
 import Player from './logic/entities/gearedEntity/player';
-import Weapon from "./logic/entities/items/weapon";
+import Weapon from './logic/entities/items/weapon';
+import { database } from './postgre';
+
 // import Entity from "./logic/entities";
 // import Player from './logic/player';
 
@@ -22,58 +24,47 @@ export interface FirebaserUser {
 
 interface userSession {
     firebaseUser: FirebaserUser;
-    gameUser?: Player;
-    sessionCreated: Date,
-    lastUpdated: Date,
+    gameUser: Player;
+    sessionCreated: Date;
+    lastUpdated: Date;
     sid: string;
+    ttl: number;
 }
 
-let session: {
+const session: {
     [id: string]: userSession;
 } = {};
 
 const players = {
     playerCount: () => Object.keys(session).length,
-    registerPlayer: (user: userSession) => {
-        let player = new Player(100, 'Pertinate', user.sid);
-        let enemy = new GearedEntity(100, 'Zach');
-        enemy.mainHand = new Weapon('Super Mega Weapon', 'sugoi', '', 5, 30, 1.6);
-        player.enemies = [
-            enemy,
-            new GearedEntity(100, 'Wes'),
-            new GearedEntity(100, 'John')
-        ];
-        // player.enemies = [new Entity(100, 'Test Enemy'), new Entity(100, 'Test Enemy2')];
-        // console.log(player.enemies);
-        const weapon = new Weapon('my weapon', 'my detailed weapon description', '', 1, 10, 1.25);
-        player.mainHand = weapon;
+    registerPlayer: async (user: userSession) => {
+        // console.log(databaseUser);
+        // const jsonString = `{"health":100,"maxHealth":100,"name":"Pertinate","attackModifiers":[],"defenseModifiers":[],"mainHand":{"name":"my weapon","description":"my detailed weapon description","image":"","maxDamage":10,"minDamage":1,"attackSpeed":1.25},"enemies":[{"health":100,"maxHealth":100,"name":"Zach","attackModifiers":[],"defenseModifiers":[],"mainHand":{"name":"Super Mega Weapon","description":"sugoi","image":"","maxDamage":30,"minDamage":5,"attackSpeed":1.6}},{"health":100,"maxHealth":100,"name":"Wes","attackModifiers":[],"defenseModifiers":[],"mainHand":{"name":"Fist","description":"Fists","image":"","maxDamage":2,"minDamage":1,"attackSpeed":1}},{"health":100,"maxHealth":100,"name":"John","attackModifiers":[],"defenseModifiers":[],"mainHand":{"name":"Fist","description":"Fists","image":"","maxDamage":2,"minDamage":1,"attackSpeed":1}}],"inventory":{"maxSize":30,"items":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},"sessionId":"asdfasdfasdfasdf"}`;
+        // const json = JSON.parse(jsonString);
+        // // console.log(JSON.stringify(player, null, '\t'));
+        // const fromJson = (data: any) => {
+        //     const player = new Player(data);
+        //     player.mainHand = new Weapon(data.mainHand);
+        //     return player;
+        // };
 
-        // const Zach = new GearedEntity(100, 'Zach');
-        // // Zach.equipWeapon(ItemBases[ItemLocation.Mainhand].fist);
-        // registerBattle({
-        //     initiator: '',
-        //     initiatorEntity: player,
-        //     enemyEntity: Zach
-        // });
-        session[user.sid] = {
-            ...user,
-            gameUser: player
-        };
-        pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.playerCount() });
+        session[user.sid] = user;
+        pubsub.publish('deltaPlayerCount', {
+            deltaPlayerCount: players.playerCount(),
+        });
         return user.sid;
     },
-    unregisterPlayer: (data: ({ session: string, email: string; })) => {
+    unregisterPlayer: (data: { session: string; email: string }) => {
         //write last update to database
         delete session[data.session];
-        pubsub.publish('deltaPlayerCount', { deltaPlayerCount: players.playerCount() });
-    }
+        pubsub.publish('deltaPlayerCount', {
+            deltaPlayerCount: players.playerCount(),
+        });
+    },
 };
 
 // setInterval(() => {
 //     console.log('session:', session);
 // }, 1000);
 
-export {
-    players,
-    session
-};
+export { players, session };

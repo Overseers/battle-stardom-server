@@ -1,19 +1,24 @@
-import GearedEntity from "..";
-import Inventory from "./inventory";
+import GearedEntity from '..';
+import Inventory from './inventory';
 
 export default class Player extends GearedEntity {
     inventory: Inventory;
     enemies: GearedEntity[] = [];
     sessionId: string;
 
-    constructor(health: number, name: string, sessionId: string) {
-        super(health, name);
+    constructor(init: Partial<Player>) {
+        super(init);
+        for (const key in init) {
+            this[key] = init[key];
+        }
+        this.enemies = init.enemies.map((entry) => new GearedEntity(entry));
         this.inventory = new Inventory();
-        this.sessionId = sessionId;
+        this.postConstructor();
     }
 
     getEnemies = () => {
-        return this.enemies.map(entry => entry.toObject());
+        // console.log(this.enemies);
+        return this.enemies.map((entry) => entry.toObject());
     };
 
     toObject = () => {
@@ -23,7 +28,7 @@ export default class Player extends GearedEntity {
             health: this.health,
             maxHealth: this.maxHealth,
             name: this.name,
-            attackSpeed: this.getAttackSpeed
+            attackSpeed: this.getAttackSpeed,
         };
     };
 }

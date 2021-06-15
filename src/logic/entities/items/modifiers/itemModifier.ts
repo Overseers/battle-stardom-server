@@ -1,5 +1,5 @@
-import Location from '../info/itemLocations';
-import Affix, { getAffixesForLocation } from '../affixes';
+import Location from "../info/itemLocations";
+import Affix, { getAffixesForLocation } from "../affixes";
 
 export default abstract class ItemModifier<T> {
     public get name(): string {
@@ -13,7 +13,7 @@ export default abstract class ItemModifier<T> {
     rollMin: number;
     rollMax: number;
 
-    affixType: 'prefix' | 'suffix';
+    affixType: "prefix" | "suffix";
     location: Location;
     type: number;
     tier: number;
@@ -24,12 +24,21 @@ export default abstract class ItemModifier<T> {
 
     abstract apply: (data: T | number) => number[];
 
-    innerApply = (data: T | number, callback: (weapon: T | number, affix: Affix) => any = () => 0) => callback(data, getAffixesForLocation(this.location)[this.affixType][this.type][this.tier]);
+    innerApply = (
+        data: T | number,
+        callback: (weapon: T | number, affix: Affix) => any = () => 0
+    ) =>
+        callback(
+            data,
+            getAffixesForLocation(this.location)[this.affixType][this.type][this.tier]
+        );
 
     abstract applyCallback: (data: T | number, affix: Affix) => any;
 
     getModifierInfo = () => {
-        return getAffixesForLocation(this.location)[this.affixType][this.type][this.tier];
+        return getAffixesForLocation(this.location)[this.affixType][this.type][
+            this.tier
+        ];
     };
 
     abstract toJSON(): Object;

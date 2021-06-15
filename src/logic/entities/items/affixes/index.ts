@@ -16,13 +16,9 @@ export default interface Affix {
 }
 
 export interface LocationAffixes {
-    prefix: [
-        Affix[]
-    ];
-    suffix: [
-        Affix[]
-    ];
-};
+    prefix: [Affix[]];
+    suffix: [Affix[]];
+}
 
 export const getAffixesForLocation = (location: Location) => {
     switch (location) {

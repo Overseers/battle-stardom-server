@@ -6,15 +6,7 @@ import config from '../../util/config';
 const router = Router();
 
 const fillTags = (tags: any) => {
-    const {
-        title,
-        metaDesc,
-        ogTitle,
-        ogDesc,
-        ogImage,
-        ogUrl,
-        ogType
-    } = tags;
+    const { title, metaDesc, ogTitle, ogDesc, ogImage, ogUrl, ogType } = tags;
 
     const filePath = path.resolve(config.rootDir, 'dist', './build', 'index.html');
 
@@ -32,15 +24,15 @@ const fillTags = (tags: any) => {
     return data;
 };
 
-const useStaticGen = (tags: ({
-    title: string,
-    metaDesc: string,
-    ogTitle: string,
-    ogDesc: string,
-    ogImage: string,
-    ogUrl: string,
+const useStaticGen = (tags: {
+    title: string;
+    metaDesc: string;
+    ogTitle: string;
+    ogDesc: string;
+    ogImage: string;
+    ogUrl: string;
     ogType: string;
-})) => {
+}) => {
     return function (request: express.Request, response: express.Response) {
         console.log('hello');
         response.header('Content-Type', 'text/html');

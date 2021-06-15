@@ -8,23 +8,24 @@ export const Mutation: MutationResolvers<SessionType> = {
         console.log(root, args, context);
         if (playerHasInitiatedBattle(context.session) === false) {
             console.log('removing enemy');
-            let enemy = session[context.session].gameUser?.enemies.splice(args.index, 1);
+            const enemy = session[context.session].gameUser?.enemies.splice(args.index, 1);
             if (enemy) {
+                console.log(session);
                 registerBattle({
                     initiator: context.session,
                     initiatorEntity: session[context.session].gameUser,
-                    enemyEntity: enemy[0]
+                    enemyEntity: enemy[0],
                 });
                 return {
-                    success: true
+                    success: true,
                 };
             }
             return {
-                success: false
+                success: false,
             };
         }
         return {
-            success: false
+            success: false,
         };
-    }
+    },
 };

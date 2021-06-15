@@ -7,7 +7,8 @@
     "start": "",
     "dev": "concurrently -n gqlc,server \"npm run generate\" \"ts-node-dev --respawn --require dotenv/config src/index.ts\"",
     "build": "tsc",
-    "generate": "graphql-codegen --config codegen.yml --watch"
+    "generate": "graphql-codegen --config codegen.yml --watch",
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --fix --quiet"
   },
   "keywords": [],
   "author": "",
@@ -52,7 +53,13 @@
     "@types/redis": "^2.8.28",
     "@types/signale": "^1.4.1",
     "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
     "concurrently": "^6.1.0",
+    "eslint": "^7.28.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.3.1",
     "ts-node": "^9.1.1",
     "ts-node-dev": "^1.1.1",
     "typescript": "^4.1.5",
@@ -66,5 +73,15 @@
     "url": "https://github.com/pertinate/battle-stardom/issues"
   },
   "homepage": "https://github.com/pertinate/battle-stardom#readme",
-  "description": ""
+  "description": "",
+    "husky": {
+      "hooks": {
+          "pre-commit": "lint-staged"
+      }
+  },
+  "lint-staged": {
+      "*.{js,ts,tsx}": [
+          "eslint --fix"
+      ]
+  }
 }

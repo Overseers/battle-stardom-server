@@ -1,22 +1,13 @@
-import Inventory from "../player/inventory";
+// import Inventory from "../player/inventory";
 
 export default class Trader {
-    constructor() {
-    }
+    constructor() { }
 
-    getInventory = () => {
+    getInventory = () => { };
 
-    };
+    removeFromInventory = () => { };
 
-    removeFromInventory = () => {
+    generateItems = () => { };
 
-    };
-
-    generateItems = () => {
-
-    };
-
-    addSpecialItem = () => {
-
-    };
+    addSpecialItem = () => { };
 }
